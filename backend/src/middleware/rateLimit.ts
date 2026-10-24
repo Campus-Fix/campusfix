@@ -19,3 +19,23 @@ export const authLimiter = createLimiter(
   { windowMs: 15 * 60 * 1000, limit: 20, skipSuccessfulRequests: true },
   "Too many login attempts. Please try again in 15 minutes.",
 );
+
+/** /ai/*: 20 per minute per user (MASTER_PLAN 13). Must be mounted after `authenticate`. */
+export const aiLimiter = createLimiter(
+  {
+    windowMs: 60 * 1000,
+    limit: 20,
+    keyGenerator: (req) => (req.user ? `user:${req.user.id}` : "unauthenticated"),
+  },
+  "Too many AI requests. Please wait a minute and try again.",
+);
+
+/** Global: 300 requests / 15 minutes per IP (MASTER_PLAN 13). Health checks are skipped. */
+export const globalLimiter = createLimiter(
+  {
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    skip: (req) => req.originalUrl === "/api/health" || req.path === "/health",
+  },
+  "Too many requests. Please try again in a few minutes.",
+);
