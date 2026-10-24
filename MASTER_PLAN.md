@@ -1002,9 +1002,9 @@ Staff calls to `/analytics/*` are automatically scoped to their own department.
 
 ```json
 // request
-{ "name": "Ananya Rao", "email": "ananya@campusfix.edu", "password": "Secret@123" }
+{ "name": "Ananya Rao", "email": "student@example.com", "password": "<password>" }
 // 201 response
-{ "success": true, "data": { "token": "eyJ...", "user": { "id": 21, "name": "Ananya Rao", "email": "ananya@campusfix.edu", "role": "STUDENT", "department": null, "isActive": true, "createdAt": "..." } } }
+{ "success": true, "data": { "token": "eyJ...", "user": { "id": 21, "name": "Ananya Rao", "email": "student@example.com", "role": "STUDENT", "department": null, "isActive": true, "createdAt": "..." } } }
 ```
 
 Rules: name 2–80 chars; valid email; password ≥ 8 chars with at least one letter and one number; email lowercased; 409 if email exists. Always creates `STUDENT`.
