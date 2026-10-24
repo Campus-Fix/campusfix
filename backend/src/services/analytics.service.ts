@@ -44,6 +44,13 @@ export interface AiAccuracyAnalytics {
   priorityAccuracy: number;
 }
 
+// Type aliases for cross-compatibility with backend lead stubs
+export type AnalyticsSummary = SummaryAnalytics;
+export type CategoryCount = CategoryAnalytics;
+export type DepartmentStats = DepartmentAnalytics;
+export type TrendPoint = TrendAnalytics;
+export type AiAccuracy = AiAccuracyAnalytics;
+
 const toNum = (val: unknown, fallback = 0): number => {
   if (val === null || val === undefined) return fallback;
   if (typeof val === 'bigint') return Number(val);
@@ -55,7 +62,7 @@ const toNum = (val: unknown, fallback = 0): number => {
  * Summary KPIs: total, counts by status, overdue, avg resolution time, avg feedback rating, last 7 days.
  * Scoped to department if deptId is provided (e.g. for staff members).
  */
-export async function getSummary(deptId?: number): Promise<SummaryAnalytics> {
+export async function getSummary(deptId?: number | null): Promise<SummaryAnalytics> {
   const whereClause = deptId ? Prisma.sql`WHERE department_id = ${deptId}` : Prisma.empty;
 
   const [summaryRows, ratingRows] = await Promise.all([
@@ -105,7 +112,7 @@ export async function getSummary(deptId?: number): Promise<SummaryAnalytics> {
  * Counts per category, descending.
  * Scoped to department if deptId is provided.
  */
-export async function getByCategory(deptId?: number): Promise<CategoryAnalytics[]> {
+export async function getByCategory(deptId?: number | null): Promise<CategoryAnalytics[]> {
   const whereClause = deptId ? Prisma.sql`WHERE c.department_id = ${deptId}` : Prisma.empty;
 
   const rows = await prisma.$queryRaw<any[]>`
@@ -157,7 +164,7 @@ export async function getByDepartment(): Promise<DepartmentAnalytics[]> {
 /**
  * Daily trend for the last N days (created vs resolved counts).
  */
-export async function getTrend(days = 30, deptId?: number): Promise<TrendAnalytics[]> {
+export async function getTrend(days = 30, deptId?: number | null): Promise<TrendAnalytics[]> {
   const safeDays = Math.max(1, Math.min(365, days));
   const deptFilterCreated = deptId ? Prisma.sql`AND department_id = ${deptId}` : Prisma.empty;
   const deptFilterResolved = deptId ? Prisma.sql`AND department_id = ${deptId}` : Prisma.empty;

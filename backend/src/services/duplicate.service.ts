@@ -19,6 +19,8 @@ export interface FindSimilarParams {
   categoryId?: number;
 }
 
+export type FindSimilarInput = FindSimilarParams;
+
 /**
  * Generate 768-dimensional semantic embedding for text using Google Gemini.
  * Never throws — returns empty array on failure or when API key is missing.
