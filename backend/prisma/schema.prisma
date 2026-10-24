@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  STUDENT
+  STAFF
+  ADMIN
+}
+
+enum ComplaintStatus {
+  SUBMITTED
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Department {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  email       String?
+  description String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+  users       User[]
+  categories  Category[]
+  complaints  Complaint[]
+
+  @@map("departments")
+}
+
+model User {
+  id                 Int             @id @default(autoincrement())
+  name               String
+  email              String          @unique
+  passwordHash       String          @map("password_hash")
+  role               Role            @default(STUDENT)
+  departmentId       Int?            @map("department_id")
+  department         Department?     @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  isActive           Boolean         @default(true) @map("is_active")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+  complaints         Complaint[]     @relation("CreatedComplaints")
+  assignedComplaints Complaint[]     @relation("AssignedComplaints")
+  statusChanges      StatusHistory[]
+  feedback           Feedback[]
+  upvotes            Upvote[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model Category {
+  id           Int         @id @default(autoincrement())
+  name         String      @unique
+  description  String?
+  icon         String?     // lucide icon name, e.g. "wifi"
+  slaHours     Int         @default(48) @map("sla_hours")
+  departmentId Int         @map("department_id")
+  department   Department  @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  complaints   Complaint[]
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  @@map("categories")
+}
+
+model Complaint {
+  id             Int                          @id @default(autoincrement())
+  ticketCode     String                       @unique @default(dbgenerated("('CMP-' || to_char(now(), 'YYYY') || '-' || lpad(nextval('complaint_ticket_seq')::text, 6, '0'))")) @map("ticket_code")
+  title          String
+  description    String
+  location       String
+  priority       Priority                     @default(MEDIUM)
+  status         ComplaintStatus              @default(SUBMITTED)
+  isAnonymous    Boolean                      @default(false) @map("is_anonymous")
+
+  categoryId     Int                          @map("category_id")
+  category       Category                     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  departmentId   Int                          @map("department_id")
+  department     Department                   @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  createdById    Int                          @map("created_by_id")
+  createdBy      User                         @relation("CreatedComplaints", fields: [createdById], references: [id], onDelete: Cascade)
+  assignedToId   Int?                         @map("assigned_to_id")
+  assignedTo     User?                        @relation("AssignedComplaints", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  aiCategoryName String?                      @map("ai_category_name")
+  aiPriority     Priority?                    @map("ai_priority")
+  aiConfidence   Float?                       @map("ai_confidence")
+  aiReason       String?                      @map("ai_reason")
+  embedding      Unsupported("vector(768)")?
+
+  dueAt          DateTime?                    @map("due_at")
+  resolvedAt     DateTime?                    @map("resolved_at")
+  createdAt      DateTime                     @default(now()) @map("created_at")
+  updatedAt      DateTime                     @updatedAt @map("updated_at")
+
+  images         ComplaintImage[]
+  history        StatusHistory[]
+  feedback       Feedback?
+  upvotes        Upvote[]
+
+  @@index([status])
+  @@index([departmentId, status])
+  @@index([categoryId])
+  @@index([createdById])
+  @@index([assignedToId])
+  @@index([createdAt])
+  @@map("complaints")
+}
+
+model ComplaintImage {
+  id          Int       @id @default(autoincrement())
+  complaintId Int       @map("complaint_id")
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  url         String
+  path        String    // storage object path, used for deletion
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([complaintId])
+  @@map("complaint_images")
+}
+
+model StatusHistory {
+  id          Int              @id @default(autoincrement())
+  complaintId Int              @map("complaint_id")
+  complaint   Complaint        @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  fromStatus  ComplaintStatus? @map("from_status")
+  toStatus    ComplaintStatus  @map("to_status")
+  note        String?
+  changedById Int              @map("changed_by_id")
+  changedBy   User             @relation(fields: [changedById], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  @@index([complaintId, createdAt])
+  @@map("status_history")
+}
+
+model Feedback {
+  id          Int       @id @default(autoincrement())
+  complaintId Int       @unique @map("complaint_id")
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  userId      Int       @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating      Int       // 1..5, validated in API + CHECK constraint
+  comment     String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("feedback")
+}
+
+model Upvote {
+  complaintId Int       @map("complaint_id")
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  userId      Int       @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@id([complaintId, userId])
+  @@map("upvotes")
+}
