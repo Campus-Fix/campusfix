@@ -408,17 +408,24 @@ const STAFF_BY_DEPT: Record<number, number> = {
 
 const STUDENT_IDS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-function imageFor(categoryId: number, seed: number): string {
-  return `https://picsum.photos/seed/campusfix-${categoryId}-${seed}/800/480`;
-}
-
-const IMG = {
-  library: imageFor(1, 11),
-  fan: imageFor(3, 12),
-  water: imageFor(4, 13),
-  washroom: imageFor(8, 14),
-  lab: imageFor(2, 15),
+const CATEGORY_IMAGES: Record<number, string> = {
+  1: "/complaints/wifi.jpg",
+  2: "/complaints/lab.jpg",
+  3: "/complaints/electrical.jpg",
+  4: "/complaints/water.jpg",
+  5: "/complaints/furniture.jpg",
+  6: "/complaints/classroom.jpg",
+  7: "/complaints/cleanliness.jpg",
+  8: "/complaints/washroom.jpg",
+  9: "/complaints/transport.jpg",
+  10: "/complaints/hostel.jpg",
+  11: "/complaints/food.jpg",
+  12: "/complaints/safety.jpg",
 };
+
+function imageFor(categoryId: number): string {
+  return CATEGORY_IMAGES[categoryId] ?? "/complaints/classroom.jpg";
+}
 
 function hoursAgo(hours: number): Date {
   return new Date(Date.now() - hours * 60 * 60 * 1000);
@@ -555,7 +562,7 @@ const SHOWCASE: SeedSpec[] = [
     status: "IN_PROGRESS",
     hoursAgo: 18,
     createdById: 9,
-    images: [IMG.library],
+    images: [imageFor(1)],
     upvotes: [8, 10, 11, 12, 14, 16],
     aiMatch: true,
   },
@@ -582,7 +589,7 @@ const SHOWCASE: SeedSpec[] = [
     status: "IN_PROGRESS",
     hoursAgo: 30,
     createdById: 11,
-    images: [IMG.library],
+    images: [imageFor(1)],
     upvotes: [8, 9, 12],
     aiMatch: true,
   },
@@ -635,7 +642,7 @@ const SHOWCASE: SeedSpec[] = [
     status: "IN_PROGRESS",
     hoursAgo: 70,
     createdById: 8,
-    images: [IMG.fan],
+    images: [imageFor(3)],
     upvotes: [9, 10, 12],
     aiMatch: true,
     overdue: true,
@@ -650,7 +657,7 @@ const SHOWCASE: SeedSpec[] = [
     status: "SUBMITTED",
     hoursAgo: 16,
     createdById: 17,
-    images: [IMG.fan],
+    images: [imageFor(3)],
     upvotes: [8, 12],
     aiMatch: true,
   },
@@ -689,7 +696,7 @@ const SHOWCASE: SeedSpec[] = [
     status: "IN_PROGRESS",
     hoursAgo: 9,
     createdById: 11,
-    images: [IMG.water],
+    images: [imageFor(4)],
     upvotes: [8, 9, 13, 15, 17],
     aiMatch: true,
   },
@@ -703,7 +710,7 @@ const SHOWCASE: SeedSpec[] = [
     status: "SUBMITTED",
     hoursAgo: 12,
     createdById: 13,
-    images: [IMG.water],
+    images: [imageFor(4)],
     upvotes: [11, 15],
     aiMatch: true,
   },
@@ -729,7 +736,7 @@ const SHOWCASE: SeedSpec[] = [
     status: "IN_PROGRESS",
     hoursAgo: 5,
     createdById: 8,
-    images: [IMG.lab],
+    images: [imageFor(2)],
     upvotes: [9, 10, 11, 12],
     aiMatch: true,
   },
@@ -918,7 +925,7 @@ function buildComplaints(): { complaints: MockComplaint[]; upvotes: MockUpvote[]
               comment: rng() < 0.5 ? "Resolved, thank you." : null,
             }
           : undefined,
-      images: [imageFor(item.categoryId, 200 + i)],
+      images: [imageFor(item.categoryId)],
     });
     void i;
   });
@@ -973,7 +980,7 @@ function buildComplaints(): { complaints: MockComplaint[]; upvotes: MockUpvote[]
     );
     historyId += history.length;
 
-    const images = (spec.images ?? [imageFor(category.id, id)]).map((url) => {
+    const images = [imageFor(category.id)].map((url) => {
       const row = { id: imageId, url, path: "" };
       imageId += 1;
       return row;
