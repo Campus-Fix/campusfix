@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+import { ArrowRight } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -29,6 +31,35 @@ import { QueryError } from "@/components/complaints/QueryError";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const PIE_COLORS = ["#4f46e5", "#7c3aed", "#0ea5e9", "#f59e0b", "#ef4444", "#10b981", "#64748b"];
+
+function SectionHeader({
+  title,
+  to,
+  toLabel,
+  tone = "default",
+}: {
+  title: string;
+  to: string;
+  toLabel: string;
+  tone?: "default" | "danger";
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <p className={`text-sm font-semibold ${tone === "danger" ? "text-red-800" : "text-slate-900"}`}>{title}</p>
+      <Link
+        to={to}
+        aria-label={toLabel}
+        className={`inline-flex size-9 items-center justify-center rounded-full shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${
+          tone === "danger"
+            ? "bg-gradient-to-br from-rose-500 to-red-600 text-white hover:from-rose-400 hover:to-red-500"
+            : "bg-gradient-to-br from-indigo-500 to-violet-600 text-white hover:from-indigo-400 hover:to-violet-500"
+        }`}
+      >
+        <ArrowRight className="size-4" />
+      </Link>
+    </div>
+  );
+}
 
 function Kpi({ label, value, warn }: { label: string; value: string | number; warn?: boolean }) {
   return (
@@ -155,8 +186,12 @@ export function DashboardPage() {
       {isAdmin ? <AiInsightsPanel /> : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-indigo-50/40 p-4 shadow-md">
-          <p className="text-sm font-semibold text-slate-900">Recent complaints</p>
+        <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-indigo-50/40 p-4 shadow-lg">
+          <SectionHeader
+            title="Recent complaints"
+            to="/app/complaints"
+            toLabel={isAdmin ? "View all complaints" : "View all my complaints"}
+          />
           <ul className="mt-3 space-y-3">
             {(recent.data?.rows ?? []).map((row) => (
               <li key={row.id}>
@@ -165,8 +200,13 @@ export function DashboardPage() {
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-red-100 bg-gradient-to-br from-white to-rose-50/50 p-4 shadow-md">
-          <p className="text-sm font-semibold text-red-800">Overdue</p>
+        <div className="rounded-xl border border-red-100 bg-gradient-to-br from-white to-rose-50/50 p-4 shadow-lg">
+          <SectionHeader
+            title="Overdue"
+            to="/app/complaints?overdue=true"
+            toLabel="View overdue complaints"
+            tone="danger"
+          />
           <ul className="mt-3 space-y-3">
             {(overdue.data?.rows ?? []).map((row) => (
               <li key={row.id}>
