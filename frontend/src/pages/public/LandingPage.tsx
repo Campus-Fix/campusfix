@@ -14,6 +14,15 @@ const STEPS = [
   { icon: ScanSearch, title: "Track it transparently", body: "Every ticket gets a code, an SLA and a public status stepper." },
 ];
 
+const FEATURES = [
+  { title: "Ticket IDs and SLAs", body: "Every report gets a code and a deadline the department has to meet." },
+  { title: "Duplicate detection", body: "AI flags similar open tickets so you can upvote instead of filing again." },
+  { title: "Role-aware queues", body: "Students track, staff work the queue, admins see campus-wide analytics." },
+];
+
+const CARD =
+  "group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-indigo-300 hover:bg-gradient-to-b hover:from-white hover:to-indigo-50 hover:shadow-xl";
+
 export function LandingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -63,13 +72,15 @@ export function LandingPage() {
       </div>
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="text-center text-2xl font-semibold tracking-tight text-slate-900">How it works</h2>
+        <h2 className="text-center text-2xl font-semibold tracking-tight text-indigo-700">How it works</h2>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {STEPS.map((step, index) => (
-            <div key={step.title} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div key={step.title} className={CARD}>
               <p className="text-xs font-medium uppercase tracking-[0.16em] text-indigo-600">Step {index + 1}</p>
-              <step.icon className="mt-3 size-6 text-indigo-600" />
-              <h3 className="mt-3 text-lg font-semibold text-slate-900">{step.title}</h3>
+              <step.icon className="mt-3 size-6 text-indigo-600 transition-transform duration-200 group-hover:scale-110" />
+              <h3 className="mt-3 text-lg font-semibold text-indigo-800 transition-colors group-hover:text-indigo-600">
+                {step.title}
+              </h3>
               <p className="mt-1.5 text-sm text-slate-600">{step.body}</p>
             </div>
           ))}
@@ -78,7 +89,7 @@ export function LandingPage() {
 
       <section className="border-y border-slate-200 bg-white">
         <div className="mx-auto max-w-xl px-6 py-14 text-center">
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Track your complaint</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-violet-700">Track your complaint</h2>
           <p className="mt-2 text-sm text-slate-500">Enter a ticket code. No login needed.</p>
           <form className="mt-6 flex flex-col gap-2 sm:flex-row" onSubmit={onTrack}>
             <Input
@@ -97,18 +108,14 @@ export function LandingPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-xl border border-slate-200 bg-white p-5">
-            <h3 className="font-semibold text-slate-900">Ticket IDs and SLAs</h3>
-            <p className="mt-1 text-sm text-slate-600">Every report gets a code and a deadline the department has to meet.</p>
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-5">
-            <h3 className="font-semibold text-slate-900">Duplicate detection</h3>
-            <p className="mt-1 text-sm text-slate-600">AI flags similar open tickets so you can upvote instead of filing again.</p>
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-5">
-            <h3 className="font-semibold text-slate-900">Role-aware queues</h3>
-            <p className="mt-1 text-sm text-slate-600">Students track, staff work the queue, admins see campus-wide analytics.</p>
-          </div>
+          {FEATURES.map((feature) => (
+            <div key={feature.title} className={CARD}>
+              <h3 className="text-lg font-semibold text-indigo-800 transition-colors group-hover:text-indigo-600">
+                {feature.title}
+              </h3>
+              <p className="mt-1.5 text-sm text-slate-600">{feature.body}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>
