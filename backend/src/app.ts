@@ -5,6 +5,7 @@ import morgan from "morgan";
 import { env, isProd } from "./config/env.js";
 import apiRouter from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
+import { globalLimiter } from "./middleware/rateLimit.js";
 
 /** Turns a CORS_ORIGIN entry (exact origin or `https://*.vercel.app`) into a matcher. */
 function originMatcher(pattern: string): (origin: string) => boolean {
@@ -44,6 +45,7 @@ export function createApp() {
       skip: (req) => isProd && req.originalUrl === "/api/health",
     }),
   );
+  app.use(globalLimiter);
 
   app.use("/api", apiRouter);
 
