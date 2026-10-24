@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 28" fill="none">
+  <path
+    fill="#4f46e5"
+    fill-rule="evenodd"
+    d="M8 3h21.5A5.5 5.5 0 0 1 35 8.5v11A5.5 5.5 0 0 1 29.5 25H8A5.5 5.5 0 0 1 2.5 19.5v-.85c1.55-.45 2.65-1.9 2.65-3.65S4.05 11.8 2.5 11.35V8.5A5.5 5.5 0 0 1 8 3Zm10.15 5.35a1.15 1.15 0 0 0-2.3 0v2.2a1.15 1.15 0 0 0 2.3 0v-2.2Zm0 5.3a1.15 1.15 0 1 0-2.3 0v2.2a1.15 1.15 0 0 0 2.3 0v-2.2Zm0 5.3a1.15 1.15 0 1 0-2.3 0v1.35a1.15 1.15 0 0 0 2.3 0V18.95Z"
+  />
+  <path
+    d="M21.1 14.15 23.35 16.4 28.2 11.2"
+    stroke="#fff"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
