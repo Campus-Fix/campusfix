@@ -220,10 +220,11 @@ export function useAnalyticsByCategory() {
   });
 }
 
-export function useAnalyticsByDepartment() {
+export function useAnalyticsByDepartment(enabled = true) {
   return useQuery({
     queryKey: ["analytics", "by-department"],
     queryFn: () => apiData<DepartmentPerformance[]>("get", "/analytics/by-department"),
+    enabled,
   });
 }
 
@@ -234,10 +235,11 @@ export function useAnalyticsTrend() {
   });
 }
 
-export function useAiAccuracy() {
+export function useAiAccuracy(enabled = true) {
   return useQuery({
     queryKey: ["analytics", "ai-accuracy"],
     queryFn: () => apiData<AiAccuracy>("get", "/analytics/ai-accuracy"),
+    enabled,
   });
 }
 

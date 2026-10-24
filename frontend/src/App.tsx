@@ -15,7 +15,7 @@ import { ComplaintDetailPage } from "@/pages/shared/ComplaintDetailPage";
 import { EditComplaintPage } from "@/pages/shared/EditComplaintPage";
 import { ProfilePage } from "@/pages/shared/ProfilePage";
 import { QueuePage } from "@/pages/staff/QueuePage";
-import { DashboardPage } from "@/pages/admin/DashboardPage";
+import { DashboardPage } from "@/pages/shared/DashboardPage";
 import { AllComplaintsPage } from "@/pages/admin/AllComplaintsPage";
 import { CategoriesPage } from "@/pages/admin/CategoriesPage";
 import { DepartmentsPage } from "@/pages/admin/DepartmentsPage";
