@@ -1,4 +1,3 @@
-import { Link } from "react-router";
 import {
   Bar,
   BarChart,
@@ -15,7 +14,7 @@ import {
   YAxis,
 } from "recharts";
 import { useAuth } from "@/hooks/useAuth";
-import { confidencePct, timeAgo } from "@/lib/format";
+import { confidencePct } from "@/lib/format";
 import {
   useAiAccuracy,
   useAnalyticsByCategory,
@@ -25,16 +24,19 @@ import {
   useComplaints,
 } from "@/hooks/queries";
 import { AiInsightsPanel } from "@/components/dashboard/AiInsightsPanel";
-import { PriorityBadge } from "@/components/complaints/PriorityBadge";
+import { ComplaintCard } from "@/components/complaints/ComplaintCard";
 import { QueryError } from "@/components/complaints/QueryError";
-import { StatusBadge } from "@/components/complaints/StatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const PIE_COLORS = ["#4f46e5", "#7c3aed", "#0ea5e9", "#f59e0b", "#ef4444", "#10b981", "#64748b"];
 
 function Kpi({ label, value, warn }: { label: string; value: string | number; warn?: boolean }) {
   return (
-    <div className={`rounded-xl border bg-white p-4 shadow-sm ${warn ? "border-red-200" : "border-slate-200"}`}>
+    <div
+      className={`rounded-xl border bg-gradient-to-br p-4 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl ${
+        warn ? "border-red-200 from-white to-rose-50" : "border-slate-200/80 from-white to-indigo-50/60"
+      }`}
+    >
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-400">{label}</p>
       <p className={`mt-2 text-2xl font-semibold tracking-tight ${warn ? "text-red-700" : "text-slate-900"}`}>{value}</p>
     </div>
@@ -153,36 +155,22 @@ export function DashboardPage() {
       {isAdmin ? <AiInsightsPanel /> : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-indigo-50/40 p-4 shadow-md">
           <p className="text-sm font-semibold text-slate-900">Recent complaints</p>
-          <ul className="mt-3 space-y-2">
+          <ul className="mt-3 space-y-3">
             {(recent.data?.rows ?? []).map((row) => (
               <li key={row.id}>
-                <Link to={`/app/complaints/${row.id}`} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                  <p className="truncate text-sm font-medium text-slate-900">{row.title}</p>
-                  <p className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                    <span className="font-mono">{row.ticketCode}</span>
-                    <StatusBadge status={row.status} />
-                    <span>{timeAgo(row.createdAt)}</span>
-                  </p>
-                </Link>
+                <ComplaintCard complaint={row} layout="row" />
               </li>
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-red-100 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-red-100 bg-gradient-to-br from-white to-rose-50/50 p-4 shadow-md">
           <p className="text-sm font-semibold text-red-800">Overdue</p>
-          <ul className="mt-3 space-y-2">
+          <ul className="mt-3 space-y-3">
             {(overdue.data?.rows ?? []).map((row) => (
               <li key={row.id}>
-                <Link to={`/app/complaints/${row.id}`} className="block rounded-lg px-2 py-1.5 hover:bg-red-50">
-                  <p className="truncate text-sm font-medium text-slate-900">{row.title}</p>
-                  <p className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                    <span className="font-mono">{row.ticketCode}</span>
-                    <PriorityBadge priority={row.priority} />
-                    <span>{row.department.name}</span>
-                  </p>
-                </Link>
+                <ComplaintCard complaint={row} layout="row" />
               </li>
             ))}
             {overdue.data?.rows.length === 0 ? <p className="text-sm text-slate-500">None overdue.</p> : null}

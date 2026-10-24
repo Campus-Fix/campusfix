@@ -408,12 +408,16 @@ const STAFF_BY_DEPT: Record<number, number> = {
 
 const STUDENT_IDS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
+function imageFor(categoryId: number, seed: number): string {
+  return `https://picsum.photos/seed/campusfix-${categoryId}-${seed}/800/480`;
+}
+
 const IMG = {
-  library: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&q=80",
-  fan: "https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=800&q=80",
-  water: "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=800&q=80",
-  washroom: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80",
-  lab: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80",
+  library: imageFor(1, 11),
+  fan: imageFor(3, 12),
+  water: imageFor(4, 13),
+  washroom: imageFor(8, 14),
+  lab: imageFor(2, 15),
 };
 
 function hoursAgo(hours: number): Date {
@@ -914,7 +918,7 @@ function buildComplaints(): { complaints: MockComplaint[]; upvotes: MockUpvote[]
               comment: rng() < 0.5 ? "Resolved, thank you." : null,
             }
           : undefined,
-      images: rng() < 0.25 ? [pick(rng, [IMG.lab, IMG.fan, IMG.water, IMG.washroom])] : undefined,
+      images: [imageFor(item.categoryId, 200 + i)],
     });
     void i;
   });
@@ -969,7 +973,7 @@ function buildComplaints(): { complaints: MockComplaint[]; upvotes: MockUpvote[]
     );
     historyId += history.length;
 
-    const images = (spec.images ?? []).map((url) => {
+    const images = (spec.images ?? [imageFor(category.id, id)]).map((url) => {
       const row = { id: imageId, url, path: "" };
       imageId += 1;
       return row;
